@@ -31,13 +31,13 @@ class Operator:
 
         In this class all sets are implemented as Python frozensets.
         See more here: https://www.programiz.com/python-programming/methods/built-in/frozenset
-        
-        @param name The name of the operator (e.g. "action1 operand1 operand2" 
+
+        @param name The name of the operator (e.g. "action1 operand1 operand2"
                is the str name of an operator for the action action1 and the
                grounded operands operand1 and operand2)
-        @param preconditions The preconditions (the predicates) that need to hold 
+        @param preconditions The preconditions (the predicates) that need to hold
                at a given state for the operator to be applicable in state
-        @param add_effects the predicates that become true in state after applying 
+        @param add_effects the predicates that become true in state after applying
                the operator
         @param del_effects the predicates that become false in state after applying
                the operator
@@ -57,7 +57,10 @@ class Operator:
         @return True if the operator's preconditions is a subset of the state,
                 False otherwise
         """
-        return None # remove after implementing the method
+        if self.preconditions.issubset(state):
+            return True
+        else:
+            return False
 
     # ---- Step 2 ----
     # Implement the method
@@ -75,14 +78,14 @@ class Operator:
         @return A new state (set of predicates) after the application of the
                 operator
         """
-        return None # remove after implementing the method
+        return state.union(self.add_effects).difference(self.del_effects)
 
     def __eq__(self, other):
         return (
-            self.name == other.name
-            and self.preconditions == other.preconditions
-            and self.add_effects == other.add_effects
-            and self.del_effects == other.del_effects
+                self.name == other.name
+                and self.preconditions == other.preconditions
+                and self.add_effects == other.add_effects
+                and self.del_effects == other.del_effects
         )
 
     def __hash__(self):
@@ -132,7 +135,10 @@ class Task:
         @param state A state
         @return True if all the goals are reached, False otherwise
         """
-        return None # remove after implementing the method
+        if self.goals.difference(state):
+            return False
+        else:
+            return True
 
     # ---- Step 4 ----
     # Implement the method
@@ -144,13 +150,20 @@ class Task:
         For every operator of the Task instance, if an operator is applicable at the
         current "state", store in a list the pair of the operator, and the new (next) state
         that holds when applying the operator in "state".
-        
-        @param state A state 
+
+        @param state A state
         @return A list with (op, new_state) pairs where "op" is the applicable
         operator and "new_state" the state that results when "op" is applied
         in state "state".
         """
-        return [] # remove after implementing the method
+        successor_states = []
+        for operator in self.operators:
+            if operator.applicable(state):
+                successor_states.append((
+                    operator,
+                    operator.apply(state)
+                ))
+        return successor_states
 
     def __str__(self):
         s = "Task {0}\n  Vars:  {1}\n  Init:  {2}\n  Goals: {3}\n  Ops:   {4}"
